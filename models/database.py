@@ -109,14 +109,28 @@ class DataSource:
         INNER JOIN "drivers" d ON u.id = d.driver_id
         WHERE u.type = 2 AND u.id = :user_id;
         """
+
         results = await self.database.fetch_one(query=query, values={"user_id": user_id})
         return results
 
     async def get_vehicles(self):
         query = """
-        SELECT vid
+        SELECT *
         FROM vehicles
         LEFT JOIN drivers ON vehicles.vid = drivers.vehicle_id_assigned
         WHERE drivers.vehicle_id_assigned IS NULL;
         """
-        await self.database.fetch_all(query)
+        return [x['vid'] for x in await self.database.fetch_all(query)]
+
+    async def assign_vehicle(self, _id: int):
+        vehicle_ids = await self.get_vehicles()
+        selected_vehicle = vehicle_ids[0]
+
+        query = """
+        UPDATE drivers
+        SET vehicle_id_assigned = :vid
+        WHERE driver_id = :id;
+        """
+
+        async with self.database.transaction():
+            await self.database.execute(query=query, values={'id': _id, 'vid': selected_vehicle})
