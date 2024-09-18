@@ -1,7 +1,4 @@
 {
-    "host": "poxy.proxy-cdccqagoo97x.us-east-1.rds.amazonaws.com",
     "port": 5432,
-    "username": "oss_aroy",
-    "password": "mizu",
     "dbName": "database-mizu"
 }

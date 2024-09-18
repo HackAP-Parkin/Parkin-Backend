@@ -108,6 +108,7 @@ venv.bak/
 .spyderproject
 .spyderworkspace
 
+
 # Rope project settings
 .ropeproject
 
@@ -116,3 +117,6 @@ venv.bak/
 
 # mypy
 .mypy/
+
+# ggshield
+.cache_ggshield

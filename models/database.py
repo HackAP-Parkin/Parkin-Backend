@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, BigInteger, ForeignKey, inspect
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, ForeignKey, inspect
 from databases import Database
 
 from dotenv import load_dotenv
@@ -28,9 +28,9 @@ class DatabaseConfig:
         with open(path) as f:
             data = json.load(f)
         return cls(
-            host=data['host'],
+            host=os.environ["DB_HOST_URL"],
             port=data['port'],
-            username=data['username'],
+            username=os.environ["DB_USERNAME"],
             password=os.environ["DB_PASSWORD"],
             db_name=data['dbName']
         )
@@ -134,3 +134,14 @@ class DataSource:
 
         async with self.database.transaction():
             await self.database.execute(query=query, values={'id': _id, 'vid': selected_vehicle})
+
+    async def deassign_vehicle(self, _id: int):
+        query = """
+        UPDATE drivers
+        SET vehicle_id_assigned = NULL
+        WHERE driver_id = :id;
+        """
+        async with self.database.transaction():
+            await self.database.execute(query=query, values={'id': _id})
+
+
